@@ -1,10 +1,10 @@
 import os,re,hashlib,json
 from uuid import uuid4
-from fastapi import FastAPI,HTTPException
+from fastapi import FastAPI,HTTPException\nfrom fastapi.middleware.cors import CORSMiddleware\nfrom fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 import psycopg
 DB=os.getenv("DATABASE_URL","postgresql://rootcause:rootcause@localhost:5432/rootcause")
-app=FastAPI(title="Root Cause",version="0.1.0")
+app=FastAPI(title="Root Cause",version="0.1.0")\napp.add_middleware(CORSMiddleware,allow_origins=["*"],allow_credentials=False,allow_methods=["*"],allow_headers=["*"])
 def db(): return psycopg.connect(DB)
 def fingerprint(text,component=None,symptom=None,dependency=None,owner=None):
     def pick(v,pat):
@@ -64,3 +64,4 @@ def preflight(p:Preflight):
 def audit_log(limit:int=100):
     with db() as x:r=x.execute("select id,event_type,payload,previous_hash,event_hash,created_at from audit_events order by id desc limit %s",(limit,)).fetchall()
     return [{"id":a,"event_type":b,"payload":c,"previous_hash":d,"event_hash":e,"created_at":f} for a,b,c,d,e,f in r]
+\n# Serve the lightweight dashboard from the same service.\napp.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")\n
