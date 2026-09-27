@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+node_modules/
+.next/
+dist/
+.env
+.env.*
+!.env.example
+data/raw/*
+models/weights/*
+.DS_Store
+.vscode/
+.idea/
