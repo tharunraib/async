@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_DB: rootcause
+      POSTGRES_USER: rootcause
+      POSTGRES_PASSWORD: rootcause
+    ports:
+      - "5432:5432"
+    volumes:
+      - rootcause_pg:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/001-schema.sql:ro
+
+volumes:
+  rootcause_pg:
