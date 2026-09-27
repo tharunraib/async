@@ -2,116 +2,74 @@
 
 > **Sovereign causal memory for operations.**
 
-Root Cause is a local-first incident-intelligence system that learns recurring operational failure patterns from an organisation's own incident history, builds evidence-backed causal hypotheses, tracks remediation effectiveness, and warns teams before the same failures are repeated.
+Root Cause learns recurring operational failure patterns from an organisation's own incident history, builds evidence-backed hypotheses, tracks remediation effectiveness, and warns teams before the same failures are repeated.
 
-**ASYNC'26 — Track 1: Sovereign AI**  
-**Team:** Track and Field  
-**Institute:** Ramaiah Institute of Technology
+**ASYNC'26 — Track 1: Sovereign AI** · **Team: Track and Field** · **Ramaiah Institute of Technology**
 
-## The core idea
-
-Traditional incident workflows restore service, but the underlying cause can survive the fix. Root Cause treats the **failure pattern**, not the document, as the unit of intelligence.
+## Core pipeline
 
 ```
 Data → Knowledge → Memory → Reasoning → Action
 ```
 
-## What the MVP implements
+## MVP implemented in this repository
 
-- Local PDF/Markdown/text ingestion
-- Failure fingerprint extraction
-- PostgreSQL + pgvector persistence
-- Full-text + vector retrieval
-- Bi-temporal incident facts
-- Recurrence clustering using multiple signals
-- Evidence-backed causal hypotheses
-- Deterministic failure-debt scoring
-- Pre-flight change checks
-- Policy-gated actions
-- SHA-256 hash-chained audit records
-- Local Ollama inference
+- Local incident ingestion and failure fingerprinting
+- PostgreSQL + pgvector-ready schema
+- Full-text evidence retrieval
+- Recurrence clustering
+- Pre-flight checks against known failure components
+- SHA-256 hash-chained audit events
+- Dockerized PostgreSQL environment
 - FastAPI service boundary
-- Next.js console boundary
 
-## Repository structure
+The final demo architecture described in the project deck extends this foundation with local Ollama models, semantic embeddings, reranking, graph expansion, MCP tools, policy gates, bi-temporal memory and the Next.js console.
 
-```
-backend/       FastAPI + domain services
-frontend/      Next.js console
-database/      PostgreSQL schema
-docs/          Architecture, design and threat model
-tests/         Automated tests
-scripts/       Repeatable local/demo utilities
-```
+## Run locally
 
-## Quick start
-
-### Requirements
-
-- Python 3.11+
-- Node.js 20+
-- Docker + Docker Compose
-- PostgreSQL 16 with pgvector
-- Ollama (optional for model-backed extraction/reasoning)
-
-### Environment
-
-```bash
-cp .env.example .env
-```
-
-### Start PostgreSQL
+### 1. Start PostgreSQL + pgvector
 
 ```bash
 docker compose up -d postgres
 ```
 
-### Backend
+### 2. Install backend dependencies
 
 ```bash
-cd backend
 python -m venv .venv
-# Windows:
-.venv\\Scripts\\activate
-# macOS/Linux:
-# source .venv/bin/activate
+# Windows: .venv\\Scripts\\activate
+# macOS/Linux: source .venv/bin/activate
 pip install -r requirements.txt
-uvicorn app.main:app --reload --port 8000
 ```
 
-### API
+### 3. Start the API
+
+```bash
+uvicorn backend.app:app --reload --port 8000
+```
 
 Open `http://localhost:8000/docs`.
 
-Key endpoints:
+## API
 
-- `POST /api/incidents` — ingest an incident
-- `GET /api/incidents` — list incidents
-- `POST /api/retrieval/search` — retrieve evidence
-- `POST /api/clusters/detect` — detect recurrence clusters
-- `POST /api/preflight` — check a proposed change
-- `GET /api/audit` — inspect the audit chain
-- `GET /health` — service health
+- `GET /health`
+- `POST /api/incidents`
+- `GET /api/incidents`
+- `POST /api/retrieval/search?query=...`
+- `POST /api/clusters/detect`
+- `POST /api/preflight`
+- `GET /api/audit`
 
-## Architecture
+## Documentation
 
-See [docs/architecture.md](docs/architecture.md).
+- [Architecture](docs/architecture.md)
+- [Demo flow](docs/demo.md)
+- [Threat model](docs/threat-model.md)
 
-## Security model
+## Engineering principle
 
-Retrieved content is treated as **evidence, not authority**. Actions require a policy decision and are recorded in the audit chain. The intended deployment keeps incident data and inference on organisation-controlled hardware.
+Retrieved content is **evidence, not authority**. Any production action path must be separated behind an explicit policy decision and recorded in an auditable history.
 
-## Demo
+## Status
 
-See [docs/demo.md](docs/demo.md) for the controlled ASYNC'26 scenario.
-
-## Important status note
-
-This repository is the implementation base for the Root Cause MVP. Claims in the pitch deck such as measured egress, latency, dataset size, or specific demo outcomes should only be reported as achieved after they have been run and measured on the final prototype.
-
-## Team
-
-- Anshuman Vijayvargiya
-- Tharun Rai B
-- Tobie Manoj
-- Vatsal Kalra
+**Working MVP foundation.** The repository contains runnable ingestion, retrieval, recurrence, pre-flight and audit primitives. Production/demo claims such as measured zero egress, latency, exact recurrence accuracy or completed MCP/policy functionality must be verified against the final integrated prototype before submission.
